@@ -1,0 +1,3 @@
+elevatorMain:
+    path: /
+    controller: 'App\Controller\ElevatorController::main'

@@ -1,0 +1,11 @@
+services:
+    _defaults:
+        public: false
+        autowire: true
+
+    App\Contracts\Elevator\IElevatorCall:
+        class: App\Service\Elevator\ElevatorCall
+        shared: false
+
+    App\Contracts\Elevator\IState:
+        factory: 'App\Services\Factory\ElevatorState::buildState'

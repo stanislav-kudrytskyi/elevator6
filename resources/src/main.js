@@ -3,8 +3,8 @@
 import Vue from 'vue'
 //import Vuex from 'vuex'
 import App from './App'
-import router from './router'
-import store from './store'
+import router from './router/index'
+import store from './store/index'
 
 Vue.config.productionTip = false;
 
