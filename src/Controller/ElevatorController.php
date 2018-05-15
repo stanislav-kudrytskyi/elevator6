@@ -8,16 +8,16 @@
 
 namespace App\Controller;
 
+use App\Contracts\Elevator\Strategy\IStrategy;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-use App\Contracts\Elevator\IState;
-use Symfony\Component\HttpFoundation\Response;
 
-class ElevatorController
+class ElevatorController extends Controller
 {
-    public function main(IState $state)
+    public function main(IStrategy $strategy)
     {
-        $state->getCurrentTargetFloor();
-        return new Response('Hi monkey');
+        return new JsonResponse($strategy->resolve()->toArray());
     }
 
     public function resolveState()

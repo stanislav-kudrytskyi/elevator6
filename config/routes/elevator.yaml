@@ -1,3 +1,4 @@
 elevatorMain:
     path: /
     controller: 'App\Controller\ElevatorController::main'
+    methods:    [POST]

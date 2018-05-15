@@ -24,7 +24,7 @@ class RequestPayload implements EventSubscriberInterface
         ];
     }
 
-    public function onKernelRequestst(GetResponseEvent $event): void
+    public function onKernelRequest(GetResponseEvent $event): void
     {
         $request = $event->getRequest();
 
