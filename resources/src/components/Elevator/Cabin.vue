@@ -1,44 +1,82 @@
 <template>
     <div class="cabin" v-bind:style="{'margin-top': offsetTop + 'px', height: height + 'px'}">
-        <div class="doors-wrapper" v-bind:class="{closed: isClosed}">
-            <!-- The checkbox hack! -->
-            <!-- The left curtain panel -->
-            <div class="door door-left"></div> <!-- curtain__panel -->
-
-            <!-- The prize behind the curtain panels -->
-            <div class="cabin-opened"></div> <!-- curtain__prize -->
+        <div class="doors-wrapper" v-bind:class="{closed: !doorsOpened}">
+            <div class="door door-left"></div>
+            <div class="cabin-opened"></div>
             <div class="door door-right"></div>
-        </div> <!-- curtain__wrapper -->
+        </div>
     </div>
 <!--    <rect x="75" :y="offsetTop" width="100" :height="height" style="fill:red"/>-->
 </template>
 
 <script>
+  import { mapState } from 'vuex'
+
   export default {
     name: "Cabin",
-    props: ['floorHeight', 'offsetTop'],
+    props: ['floorHeight'],
     created () {
-      console.log('created cabin',this.$data, this.$props);
-      let self = this;
-      setTimeout(function () {
-        self.isClosed = false;
-      }, 5000)
+      this.offsetTop = this.totalHeight - this.height * this.currentFloor;
     },
     data() {
       return {
-        isClosed: true
+        offsetTop: 0,
+        moveInterval: null
       }
     },
     computed: {
-      aDouble: function () {
-        return this.a * 2
-      },
+      ...mapState({
+        doorsOpened: state => state.elevator.doorsOpened,
+        currentFloor: state => state.elevator.currentFloor,
+        targetFloor: state => state.elevator.targetFloor,
+        numberOfFloors: state =>state.elevator.numberOfFloors,
+        elevatorCalls: state => state.elevator.elevatorCalls
+      }),
       height: function () {
         return this.$props.floorHeight
       },
-/*      isClosed: function () {
-        return true;
-      }*/
+      totalHeight () {
+        return this.height * this.numberOfFloors
+      },
+      targetOffset() {
+        if (!this.targetFloor) {
+          return null;
+        }
+
+        let delta = this.currentFloor > this.targetFloor ? -1 : 1;
+
+        return this.totalHeight - this.height * (this.currentFloor + delta);
+      }
+    },
+    watch: {
+      numberOfFloors (value, oldValue) {
+        this.offsetTop = this.totalHeight - this.height * this.currentFloor;
+      },
+      targetOffset(value) {
+        if (null === value) {
+          return;
+        }
+
+        let step = Math.ceil(this.height / 3);
+
+        if (this.targetOffset < this.offsetTop) {
+          step *= -1;
+        }
+
+        this.moveInterval = setInterval(() => {
+          if (Math.abs(this.offsetTop - this.targetOffset) < Math.abs(step)) {
+            clearInterval(this.moveInterval);
+            this.offsetTop = this.targetOffset;
+
+            let delta = this.currentFloor > this.targetFloor ? -1 : 1;
+
+            this.$store.dispatch('setCurrentFloor', {currentFloor: this.currentFloor + delta});
+            return;
+          }
+
+          this.offsetTop += step;
+        }, 1000);
+      }
     }
   }
 </script>
@@ -46,12 +84,14 @@
 <style scoped lang="scss">
     .cabin {
         position: absolute;
-        background-color: red;
-        width: 100px;
+        width: 200px;
         margin-left: 75px;
         .doors-wrapper {
-            width: 100%;
+            width: 130px;
             height: 100%;
+            background-color: #9d9d9d;
+            float: left;
+
             .door {
                 background: orange;
                 width: 50%;
@@ -79,6 +119,9 @@
             .door-right {
                 transform: translateX(0);
             }
+        }
+        .control-container {
+            float:left;
         }
     }
 </style>

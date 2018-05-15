@@ -1,12 +1,7 @@
 <template>
-    <div class="elevator">
-<!--        <svg width="250" :height="height"
-               viewBox="0 0 250 1000"
-               xmlns="http://www.w3.org/2000/svg">-->
-        <cabin
-                v-bind:offsetTop="cabinOffsetTop"
-                v-bind:floorHeight="floorHeight"
-        ></cabin>
+    <div class="main-container">
+        <div class="elevator">
+            <cabin v-bind:floorHeight="floorHeight"></cabin>
             <floor
                     v-for="item in floors"
                     :key="item.floorNumber"
@@ -14,83 +9,85 @@
                     v-bind:floorNumber="item.floorNumber"
                     v-bind:floorHeight="floorHeight"
             ></floor>
-
-<!--        </svg>-->
-        <!--{{msg}}
-        <div class="lift-shaft">
-            <div class="lift"></div>
-        </div>-->
+        </div>
+        <controlpanel></controlpanel>
     </div>
 </template>
 
 <script>
   import Floor from './Elevator/Floor';
   import Cabin from './Elevator/Cabin';
-  import { mapState, mapGetters } from 'vuex'
+  import ControlPanel from './Elevator/ControlPanel';
+  import { mapState } from 'vuex'
 
   export default {
     name: 'Elevator',
     created () {
       this.$store.dispatch({
         type: 'reset',
-        height: 1000,
-        floorsNumber: 3
+        numberOfFloors: 5,
+        strategy: 'monkey',
       });
     },
     computed: {
       ...mapState({
-        height: state => state.elevator.height,
-        numberFloors: state => state.elevator.numberFloors,
+        numberOfFloors: state => state.elevator.numberOfFloors,
+        targetFloor: state => state.elevator.targetFloor,
+        currentFloor: state => state.elevator.currentFloor
       }),
       floorHeight() {
-        return this.$store.getters.floorHeight
-      } ,
+        return Math.ceil(this.totalHeight / this.numberOfFloors);
+      },
       floors() {
         let floors = [];
-        for (let i = 0; i < this.numberFloors; i++) {
+        for (let i = 0; i < this.numberOfFloors; i++) {
           floors.push({
             offsetTop: i * this.floorHeight,
-            floorNumber: this.numberFloors - i
+            floorNumber: this.numberOfFloors - i
           });
-        }
-console.log('floors', floors)
+        };
+
         return floors;
       }
     },
     data: function (){
       return {
         msg: 'Elevator goes here',
-        cabinOffsetTop: 0
+        cabinOffsetTop: 0,
+        totalHeight: 600
+      }
+    },
+    watch: {
+      targetFloor (oldValue, newValue) {
+        console.log('targetFloor', oldValue, newValue)
+        if (this.targetFloor === this.currentFloor) {
+          this.$store.dispatch('openDoors');
+        }
+      },
+      currentFloor(floor) {
+        if (this.targetFloor === this.currentFloor) {
+          this.$store.dispatch('openDoors');
+        }
       }
     },
     mounted() {
-      let vm = this;
 
-      /*setInterval(function () {
-        vm.cabinOffsetTop += 10;
-        console.log(vm.cabinOffsetTop)
-      }, 1000)*/
     },
     components: {
       floor: Floor,
-      cabin: Cabin
+      cabin: Cabin,
+      controlpanel: ControlPanel
     }
   }
 </script>
 
 <style>
     #app {
-        /*height:100vh;*/
-        text-align:left
+        text-align:left;
+        padding: 0;
+        margin: 0;
     }
     .elevator {
-        height: 100vh;
-    }
-    .lift-shaft {
-        min-height: 90vh;
-        margin-top: 5vh;
-        width: 25%;
-        background-color: #e8e9e4;
-        border: 2px #000 solid;
+        float:left;
     }
 </style>

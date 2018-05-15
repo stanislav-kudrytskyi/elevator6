@@ -24,12 +24,20 @@ class CrazyMonkeyStrategy extends Strategy implements ICrazyMonkeyStrategy
 			return $this->state->getNumberOfFloors() - 1;
 		}
 
-		return $this->state->getCurrentFloor() + 1;
+		$delta = mt_rand(0, 1) ? 1 : -1;
+		return $this->state->getCurrentFloor() + $delta;
 	}
 
-	protected function determineDirection(): string
+	protected function determineDirection(): ?string
 	{
-		return $this->determineTargetFloor() - $this->state->getCurrentFloor() > 0 ? IDirection::UP : IDirection::DOWN;
+		$target = $this->determineTargetFloor();
+		$current = $this->state->getCurrentFloor();
+
+		if ($target - $current === 0) {
+			return null;
+		}
+
+		return $target - $current > 0 ? IDirection::UP : IDirection::DOWN;
 	}
 
 	public function resolve(): IStateResolution

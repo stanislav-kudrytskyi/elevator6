@@ -1,44 +1,85 @@
 import * as states from './elevatorStates'
-// initial state
-// shape: [{ id, quantity }]
+import Vue from 'vue'
+
 const state = {
+  strategy: false,
   doorsOpened: false,
-  height: 0,
   direction: null,
   currentFloor: 1,
   targetFloor: null,
   personsInside: 0,
-  numberFloors: 0,
-  elevatorCalls: []
+  numberOfFloors: 0,
+  elevatorCalls: [],
+  ajax: null
 };
 
 // getters
 const getters = {
-  floorHeight: state => {
-    console.log('el', state)
-    return Math.ceil(state.height / state.numberFloors);
-  }
+
 };
 
 // actions
 const actions = {
+  requestStateResolution({commit}, settings) {
+    Vue.http.post('https://elevator.local.com/elevator/', state, {
+      before(request) {
+        // abort previous request, if exists
+        if (Vue.previousRequest) {
+          Vue.previousRequest.abort();
+        }
+        // set previous request on Vue instance
+        Vue.previousRequest = request;
+      }
+    }).then(response => {
+      commit('setTargetFloor', {
+        targetFloor: response.body.targetFloor
+      })
+    }, response => {
+      console.log('error', response);
+    })
+  },
   reset({commit}, settings) {
     commit(states.INIT, settings)
   },
-  addCall({commit}, elevatorCall) {
+  addCall({dispatch, commit}, elevatorCall) {
     commit('addCall', {
       direction: elevatorCall.direction,
       from: elevatorCall.fromFloor ? elevatorCall.fromFloor : null,
       to: elevatorCall.toFloor ? elevatorCall.toFloor : null
-    })
+    });
+
+    dispatch('requestStateResolution');
+  },
+  openDoors({commit, dispatch}) {
+    commit('openDoors');
+    setTimeout(function closeDoors() {
+      if (state.personsInside > 0 && state.elevatorCalls.length === 0) {
+        setTimeout(closeDoors, 4000);
+        return;
+      }
+
+      commit('closeDoors');
+      if (state.elevatorCalls.length) {
+        dispatch('requestStateResolution')
+      }
+    }, 4000);
+  },
+  setCurrentFloor({commit}, payload) {
+    commit('setCurrentFloor', payload)
+  },
+  getInCabin({commit}) {
+    commit('getInCabin');
+  },
+  getOutCabin({commit}) {
+    commit('getOutCabin');
   }
 };
 
 // mutations
 const mutations = {
   init (state, payload) {
-    state.height = payload.height ? payload.height : 1000;
-    state.numberFloors = payload.numberFloors ? payload.numberFloors : 5;
+    state.strategy = payload.strategy ? payload.strategy : false;
+    state.numberOfFloors = payload.numberOfFloors ? payload.numberOfFloors : 5;
     state.elevatorCalls = [];
     state.doorsOpened = false;
     state.personsInside = 0;
@@ -49,13 +90,33 @@ const mutations = {
   addCall(state, payload) {
     state.elevatorCalls.push(payload);
   },
-  openDoors(state, payload) {
-
+  openDoors(state) {
     state.doorsOpened = true;
+    state.elevatorCalls = state.elevatorCalls.filter(function (call) {
+      if (call.to === state.currentFloor || call.from === state.currentFloor) {
+        return false;
+      }
+
+      return true;
+    });
+
+    state.targetFloor = null;
+  },
+  closeDoors(state) {
+    state.doorsOpened = false;
+  },
+
+  setCurrentFloor(state, payload) {
+    state.currentFloor = payload.currentFloor
+  },
+  getInCabin(state) {
+    state.personsInside++;
+  },
+  getOutCabin(state) {
+    state.personsInside--;
   },
   setTargetFloor(state, payload) {
     state.targetFloor = payload.targetFloor;
-
   }
 };
 

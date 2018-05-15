@@ -11,12 +11,12 @@ export default new Router({
   routes: [
     {path: '*', component: NotFound},
     {
-      path: '/',
+      path: '/vue',
       name: 'HelloWorld',
       component: HelloWorld
     },
     {
-      path: '/elevator',
+      path: '/',
       name: 'Elevator',
       component: Elevator
     }

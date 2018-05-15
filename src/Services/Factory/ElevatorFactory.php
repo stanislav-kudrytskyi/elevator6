@@ -51,6 +51,7 @@ class ElevatorFactory
 
 	/**
 	 * @return IState
+	 * @throws \Exception
 	 */
     public function buildState()
     {
