@@ -21,3 +21,6 @@ services:
 
     App\Contracts\Elevator\Strategy\ICrazyMonkeyStrategy:
         class: App\Services\Elevator\Strategy\CrazyMonkeyStrategy
+
+    App\Contracts\Elevator\Strategy\IStandardStrategy:
+        class: App\Services\Elevator\Strategy\StandardStrategy

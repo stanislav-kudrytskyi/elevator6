@@ -15,36 +15,42 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class ResponseListener implements EventSubscriberInterface
 {
-	protected static $priority = -512;
+    protected static $priority = -512;
 
-	public static function getSubscribedEvents(): array
-	{
-		return [
-			KernelEvents::RESPONSE => [
-				['onKernelResponse', static::$priority,],
-			],
-			KernelEvents::EXCEPTION => [
-				['onKernelException', 0, ]
-			],
-		];
-	}
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::RESPONSE => [
+                ['onKernelResponse', static::$priority,],
+            ],
+            KernelEvents::EXCEPTION => [
+                ['onKernelException', 0,]
+            ],
+        ];
+    }
 
-	public function onKernelResponse(FilterResponseEvent $event)
-	{
-		$response = $event->getResponse();
-		$response->headers->set('Access-Control-Allow-Origin' , '*', true);
-		$response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD', true);
-		$response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With', true);
-	}
+    public function onKernelResponse(FilterResponseEvent $event)
+    {
+        $response = $event->getResponse();
+        $response->headers->set('Access-Control-Allow-Origin', '*', true);
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD', true);
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With', true);
+    }
 
-	public function onKernelException(GetResponseForExceptionEvent $event)
-	{
-		$exception = $event->getException();
-		$response = new JsonResponse([
-			'error' => true,
-			'message' => $exception->getMessage(),
-			'code' => $exception->getCode(),
-		]);
-		$event->setResponse($response);
-	}
+    public function onKernelException(GetResponseForExceptionEvent $event)
+    {
+        $request = $event->getRequest();
+
+        if (0 !== strpos($request->headers->get('accept'), 'application/json')) {
+            return;
+        }
+
+        $exception = $event->getException();
+        $response = new JsonResponse([
+            'error' => true,
+            'message' => $exception->getMessage(),
+            'code' => $exception->getCode(),
+        ]);
+        $event->setResponse($response);
+    }
 }

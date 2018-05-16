@@ -25,9 +25,9 @@ class State implements IState, ISelfValidated
     protected $direction = null;
     protected $personsInside = 0;
 
-	/**
-	 * @var IOutsideCabinCall[]
-	 */
+    /**
+     * @var IOutsideCabinCall[]
+     */
     protected $outsideCabinCall = [];
 
     /**
@@ -46,16 +46,16 @@ class State implements IState, ISelfValidated
     }
 
     public function getFromCabinCalls(): array
-	{
-		return $this->fromCabinCall;
-	}
+    {
+        return $this->fromCabinCall;
+    }
 
-	public function getOutsideCabinCalls(): array
-	{
-		return $this->outsideCabinCall;
-	}
+    public function getOutsideCabinCalls(): array
+    {
+        return $this->outsideCabinCall;
+    }
 
-	public function getCurrentTargetFloor(): int
+    public function getCurrentTargetFloor(): int
     {
         return $this->targetFloor;
     }
@@ -71,11 +71,11 @@ class State implements IState, ISelfValidated
     }
 
     public function getCurrentDirection(): ?string
-	{
-		return $this->direction;
-	}
+    {
+        return $this->direction;
+    }
 
-	public function setNumberOfFloors(int $number): IState
+    public function setNumberOfFloors(int $number): IState
     {
         $this->numberOfFloors = $number;
         return $this;
@@ -96,50 +96,50 @@ class State implements IState, ISelfValidated
     public function setElevatorCalls(IElevatorCall ...$calls): IState
     {
         foreach ($calls as $call) {
-			if ($call instanceof IOutsideCabinCall) {
-				$this->outsideCabinCall[] = $call;
-				continue;
-			}
+            if ($call instanceof IOutsideCabinCall) {
+                $this->outsideCabinCall[] = $call;
+                continue;
+            }
 
-			$this->fromCabinCall[] = $call;
-		}
+            $this->fromCabinCall[] = $call;
+        }
 
         return $this;
     }
 
     public function setPersonsInside(int $number = 0): IState
-	{
-		$this->personsInside = $number;
-		return $this;
-	}
+    {
+        $this->personsInside = $number;
+        return $this;
+    }
 
-	public function setCurrentDirection(string $direction = null)
-	{
-		if (!in_array($direction, [null, IDirection::UP, IDirection::DOWN])) {
-			throw new ElevatorException('Invalid direction', 400);
-		}
+    public function setCurrentDirection(string $direction = null)
+    {
+        if (!in_array($direction, [null, IDirection::UP, IDirection::DOWN])) {
+            throw new ElevatorException('Invalid direction', 400);
+        }
 
-		$this->direction = $direction;
-		return $this;
-	}
+        $this->direction = $direction;
+        return $this;
+    }
 
-	public function validate(): bool
-	{
-		if ($this->currentFloor === 0) {
-			throw new ElevatorException('Current floor not specified', 412);
-		}
+    public function validate(): bool
+    {
+        if ($this->currentFloor === 0) {
+            throw new ElevatorException('Current floor not specified', 412);
+        }
 
-		if ($this->numberOfFloors === 0) {
-			throw new ElevatorException('Number of floors not specified', 412);
-		}
+        if ($this->numberOfFloors === 0) {
+            throw new ElevatorException('Number of floors not specified', 412);
+        }
 
-		if ($this->currentFloor < 1 || $this->currentFloor > $this->numberOfFloors) {
-			throw new ElevatorException("Current floor value is out of range [1, {$this->numberOfFloors}]");
-		}
-		if ($this->targetFloor && $this->targetFloor < 1 || $this->targetFloor > $this->numberOfFloors) {
-			throw new ElevatorException("Current floor value is out of range [1, {$this->numberOfFloors}]");
-		}
+        if ($this->currentFloor < 1 || $this->currentFloor > $this->numberOfFloors) {
+            throw new ElevatorException("Current floor value is out of range [1, {$this->numberOfFloors}]");
+        }
+        if ($this->targetFloor && $this->targetFloor < 1 || $this->targetFloor > $this->numberOfFloors) {
+            throw new ElevatorException("Current floor value is out of range [1, {$this->numberOfFloors}]");
+        }
 
-		return true;
-	}
+        return true;
+    }
 }

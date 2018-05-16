@@ -14,57 +14,57 @@ use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 
 class OutsideCabinCallTest extends TestCase
 {
-	/**
-	 * @dataProvider getValidCalls
-	 */
-	public function testFromCabinCallInitialization($floor, $direction)
-	{
-		$call = new OutsideCabinCall();
-		$this->assertInstanceOf(IElevatorCall::class, $call);
-		$this->assertInstanceOf(IOutsideCabinCall::class, $call);
-		$call->setFloor($floor);
-		$call->setDirection($direction);
-		$this->assertEquals($floor, $call->getFloor());
-		$this->assertEquals($direction, $call->getDirection());
-	}
+    /**
+     * @dataProvider getValidCalls
+     */
+    public function testFromCabinCallInitialization($floor, $direction)
+    {
+        $call = new OutsideCabinCall();
+        $this->assertInstanceOf(IElevatorCall::class, $call);
+        $this->assertInstanceOf(IOutsideCabinCall::class, $call);
+        $call->setFloor($floor);
+        $call->setDirection($direction);
+        $this->assertEquals($floor, $call->getFloor());
+        $this->assertEquals($direction, $call->getDirection());
+    }
 
-	/**
-	 * @dataProvider getInvalidCalls
-	 * @expectedException \App\Services\Elevator\ElevatorException
-	 * @expectedExceptionCode 400
-	 */
-	public function testInvalidParametersOutsideCalls($floor, $direction)
-	{
-		$call = new OutsideCabinCall();
-		$this->assertInstanceOf(IElevatorCall::class, $call);
-		$this->assertInstanceOf(IOutsideCabinCall::class, $call);
-		$call->setFloor($floor);
-		$call->setDirection($direction);
-	}
+    /**
+     * @dataProvider getInvalidCalls
+     * @expectedException \App\Services\Elevator\ElevatorException
+     * @expectedExceptionCode 400
+     */
+    public function testInvalidParametersOutsideCalls($floor, $direction)
+    {
+        $call = new OutsideCabinCall();
+        $this->assertInstanceOf(IElevatorCall::class, $call);
+        $this->assertInstanceOf(IOutsideCabinCall::class, $call);
+        $call->setFloor($floor);
+        $call->setDirection($direction);
+    }
 
-	/**
-	 * @expectedException \App\Services\Elevator\ElevatorException
-	 * @expectedExceptionCode 412
-	 */
-	public function testFloorNumberIsPositive()
-	{
-		(new OutsideCabinCall())->setFloor(-1);
-	}
+    /**
+     * @expectedException \App\Services\Elevator\ElevatorException
+     * @expectedExceptionCode 412
+     */
+    public function testFloorNumberIsPositive()
+    {
+        (new OutsideCabinCall())->setFloor(-1);
+    }
 
-	public function getValidCalls()
-	{
-		return [
-			[3, 'up'],
-			[2, 'down'],
-			[1, 'up'],
-		];
-	}
+    public function getValidCalls()
+    {
+        return [
+            [3, 'up'],
+            [2, 'down'],
+            [1, 'up'],
+        ];
+    }
 
-	public function getInvalidCalls()
-	{
-		return [
-			[1, 'smth'],
-			[2, 'downup'],
-		];
-	}
+    public function getInvalidCalls()
+    {
+        return [
+            [1, 'smth'],
+            [2, 'downup'],
+        ];
+    }
 }

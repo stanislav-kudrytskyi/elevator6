@@ -12,7 +12,8 @@ namespace App\Tests\Services\Factory;
 use App\Contracts\Elevator\Call\IElevatorCall;
 use App\Contracts\Elevator\Call\IFromCabinCall;
 use App\Contracts\Elevator\Call\IOutsideCabinCall;
-use App\Services\Elevator\Call\FromCabinCall;use App\Services\Elevator\Call\OutsideCabinCall;
+use App\Services\Elevator\Call\FromCabinCall;
+use App\Services\Elevator\Call\OutsideCabinCall;
 use App\Services\Factory\ElevatorFactory;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Symfony\Component\DependencyInjection\Container;
@@ -22,12 +23,12 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class ElevatorFactoryTest extends TestCase
 {
     protected $requestStack;
-	protected $request;
-	protected $container;
+    protected $request;
+    protected $container;
 
-    protected function setUp()/* The :void return type declaration that should be here would cause a BC issue */
+    protected function setUp()
     {
-		$parameters = json_decode('{
+        $parameters = json_decode('{
   "numberOfFloors" : 5,
   "currentFloor": 5,
   "personsInside": 2,
@@ -50,22 +51,22 @@ class ElevatorFactoryTest extends TestCase
 
         $this->request = Request::create('/elevator', 'POST', $parameters);
 
-		$this->requestStack = $this->createMock(RequestStack::class);
-		$this->requestStack->method('getCurrentRequest')->willReturn($this->request);
-		$this->container = $this->createMock(Container::class);
-		$this->container->method('get')->will(
-			$this->onConsecutiveCalls(
-				new OutsideCabinCall(),
-				new OutsideCabinCall(),
-				new FromCabinCall()
-			)
-		);
+        $this->requestStack = $this->createMock(RequestStack::class);
+        $this->requestStack->method('getCurrentRequest')->willReturn($this->request);
+        $this->container = $this->createMock(Container::class);
+        $this->container->method('get')->will(
+            $this->onConsecutiveCalls(
+                new OutsideCabinCall(),
+                new OutsideCabinCall(),
+                new FromCabinCall()
+            )
+        );
 
     }
 
     public function testBuildState()
     {
-    	$this->assertInstanceOf(RequestStack::class, $this->requestStack);
+        $this->assertInstanceOf(RequestStack::class, $this->requestStack);
         $elevatorState = (new ElevatorFactory($this->requestStack, $this->container))->buildState();
         $this->assertEquals(5, $elevatorState->getNumberOfFloors());
         $this->assertEquals(5, $elevatorState->getCurrentFloor());
@@ -83,6 +84,6 @@ class ElevatorFactoryTest extends TestCase
 
         $calls = $elevatorState->getFromCabinCalls();
         $this->assertEquals(1, count($calls));
-		$this->assertInstanceOf(IFromCabinCall::class, $calls[0]);
+        $this->assertInstanceOf(IFromCabinCall::class, $calls[0]);
     }
 }

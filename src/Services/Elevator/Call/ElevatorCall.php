@@ -12,20 +12,20 @@ use App\Services\Elevator\ElevatorException;
 
 abstract class ElevatorCall implements IElevatorCall
 {
-	protected $floor;
+    protected $floor;
 
-	public function setFloor(int $floor): IElevatorCall
-	{
-		if ($floor < 1) {
-			throw new ElevatorException('Floor number must be positive', 412);
-		}
+    public function setFloor(int $floor): IElevatorCall
+    {
+        if ($floor < 1) {
+            throw new ElevatorException('Floor number must be positive', 412);
+        }
 
-		$this->floor = $floor;
-		return $this;
-	}
+        $this->floor = $floor;
+        return $this;
+    }
 
-	public function getFloor() :int
-	{
-		return $this->floor;
-	}
+    public function getFloor(): int
+    {
+        return $this->floor;
+    }
 }

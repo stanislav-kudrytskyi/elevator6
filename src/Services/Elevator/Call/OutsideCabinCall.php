@@ -12,22 +12,26 @@ use App\Contracts\Elevator\Call\IOutsideCabinCall;
 use App\Contracts\Elevator\IDirection;
 use App\Services\Elevator\ElevatorException;
 
+/**
+ * Class OutsideCabinCall
+ * @package App\Services\Elevator\Call
+ */
 class OutsideCabinCall extends ElevatorCall implements IOutsideCabinCall
 {
-	protected $direction;
+    protected $direction;
 
-	public function setDirection(string $direction = null): IElevatorCall
-	{
-		if (!in_array($direction, [IDirection::UP, IDirection::DOWN])) {
-			throw new ElevatorException('Invalid direction', 400);
-		}
+    public function setDirection(string $direction = null): IElevatorCall
+    {
+        if (!in_array($direction, [IDirection::UP, IDirection::DOWN])) {
+            throw new ElevatorException('Invalid direction', 400);
+        }
 
-		$this->direction = $direction;
-		return $this;
-	}
+        $this->direction = $direction;
+        return $this;
+    }
 
-	public function getDirection(): string
-	{
-		return $this->direction;
-	}
+    public function getDirection(): string
+    {
+        return $this->direction;
+    }
 }

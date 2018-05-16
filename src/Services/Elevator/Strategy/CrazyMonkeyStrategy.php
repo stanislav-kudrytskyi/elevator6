@@ -14,37 +14,37 @@ use App\Services\Elevator\StateResolution;
 
 class CrazyMonkeyStrategy extends Strategy implements ICrazyMonkeyStrategy
 {
-	protected function determineTargetFloor(): int
-	{
-		if ($this->state->getCurrentFloor() === 1) {
-			return 2;
-		}
+    protected function determineTargetFloor(): int
+    {
+        if ($this->state->getCurrentFloor() === 1) {
+            return 2;
+        }
 
-		if ($this->state->getCurrentFloor() === $this->state->getNumberOfFloors()) {
-			return $this->state->getNumberOfFloors() - 1;
-		}
+        if ($this->state->getCurrentFloor() === $this->state->getNumberOfFloors()) {
+            return $this->state->getNumberOfFloors() - 1;
+        }
 
-		$delta = mt_rand(0, 1) ? 1 : -1;
-		return $this->state->getCurrentFloor() + $delta;
-	}
+        $delta = mt_rand(0, 1) ? 1 : -1;
+        return $this->state->getCurrentFloor() + $delta;
+    }
 
-	protected function determineDirection(): ?string
-	{
-		$target = $this->determineTargetFloor();
-		$current = $this->state->getCurrentFloor();
+    protected function determineDirection(): ?string
+    {
+        $target = $this->determineTargetFloor();
+        $current = $this->state->getCurrentFloor();
 
-		if ($target - $current === 0) {
-			return null;
-		}
+        if ($target - $current === 0) {
+            return null;
+        }
 
-		return $target - $current > 0 ? IDirection::UP : IDirection::DOWN;
-	}
+        return $target - $current > 0 ? IDirection::UP : IDirection::DOWN;
+    }
 
-	public function resolve(): IStateResolution
-	{
-		return new StateResolution(
-			$this->determineTargetFloor(),
-			$this->determineDirection()
-		);
-	}
+    public function resolve(): IStateResolution
+    {
+        return new StateResolution(
+            $this->determineTargetFloor(),
+            $this->determineDirection()
+        );
+    }
 }

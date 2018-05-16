@@ -22,26 +22,26 @@ class RequestPayload implements EventSubscriberInterface
     {
         return [
             KernelEvents::REQUEST => [
-            	['onKernelRequest', static::$priority,],
-				['onOptions', static::$priority,]
-			]
+                ['onKernelRequest', static::$priority,],
+                ['onOptions', static::$priority,]
+            ]
         ];
     }
 
     public function onOptions(GetResponseEvent $event): void
-	{
-		// Don't do anything if it's not the master request.
-		if (!$event->isMasterRequest()) {
-			return;
-		}
-		$request = $event->getRequest();
-		$method  = $request->getRealMethod();
+    {
+        // Don't do anything if it's not the master request.
+        if (!$event->isMasterRequest()) {
+            return;
+        }
+        $request = $event->getRequest();
+        $method = $request->getRealMethod();
 
-		if ('OPTIONS' == $method) {
-			$response = new Response();
-			$event->setResponse($response);
-		}
-	}
+        if ('OPTIONS' === $method) {
+            $response = new Response();
+            $event->setResponse($response);
+        }
+    }
 
     public function onKernelRequest(GetResponseEvent $event): void
     {
