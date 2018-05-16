@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        public: false
+        autowire: true
+
+    App\Listener\:
+         resource: '../../src/Listener'
+         tags:
+             - { name: kernel.event_subscriber}

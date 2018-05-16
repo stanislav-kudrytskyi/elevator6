@@ -1,0 +1,26 @@
+services:
+    _defaults:
+        public: true
+        autowire: true
+
+    App\Services\Factory\ElevatorFactory: ~
+
+    App\Contracts\Elevator\Call\IOutsideCabinCall:
+        class: App\Services\Elevator\Call\OutsideCabinCall
+        shared: false
+
+    App\Contracts\Elevator\Call\IFromCabinCall:
+        class: App\Services\Elevator\Call\FromCabinCall
+        shared: false
+
+    App\Contracts\Elevator\IState:
+        factory: 'App\Services\Factory\ElevatorFactory:buildState'
+
+    App\Contracts\Elevator\Strategy\IStrategy:
+        factory: 'App\Services\Factory\ElevatorFactory:buildStrategy'
+
+    App\Contracts\Elevator\Strategy\ICrazyMonkeyStrategy:
+        class: App\Services\Elevator\Strategy\CrazyMonkeyStrategy
+
+    App\Contracts\Elevator\Strategy\IStandardStrategy:
+        class: App\Services\Elevator\Strategy\StandardStrategy

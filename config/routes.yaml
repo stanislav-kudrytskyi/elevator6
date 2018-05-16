@@ -1,0 +1,11 @@
+index:
+    path: /
+    controller: App\Controller\ElevatorController::index
+
+options:
+    path: '*'
+    methods: [OPTIONS]
+
+elevator:
+    resource: routes/elevator.yaml
+    prefix: /elevator
