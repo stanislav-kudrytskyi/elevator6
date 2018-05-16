@@ -27,12 +27,25 @@ abstract class Strategy implements IStrategy
         $this->currentFloor = $this->state->getCurrentFloor();
     }
 
-    protected function getNearestCall(IElevatorCall ...$calls)
+    protected function getNearestCall(IElevatorCall ...$calls): ?IElevatorCall
     {
         $first = array_shift($calls);
 
         return array_reduce($calls, function (IElevatorCall $carry, IElevatorCall $item) {
             if (abs($carry->getFloor() - $this->currentFloor) > abs($item->getFloor() - $this->currentFloor)) {
+                return $item;
+            }
+
+            return $carry;
+        }, $first);
+    }
+
+    protected function getFurthestCall(IElevatorCall ...$calls): ?IElevatorCall
+    {
+        $first = array_shift($calls);
+
+        return array_reduce($calls, function (IElevatorCall $carry, IElevatorCall $item) {
+            if (abs($carry->getFloor() - $this->currentFloor) < abs($item->getFloor() - $this->currentFloor)) {
                 return $item;
             }
 

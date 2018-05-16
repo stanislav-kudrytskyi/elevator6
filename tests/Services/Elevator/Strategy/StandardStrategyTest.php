@@ -43,11 +43,25 @@ class StandardStrategyTest extends TestCase
         $solution = $strategy->resolve();
         $this->assertInstanceOf(IStateResolution::class, $solution);
         $this->assertEquals($result['floor'], $solution->getTargetFloor());
+        $this->assertEquals($result['direction'], $solution->getDirection());
     }
 
     public function getStatesSet()
     {
         $set = [
+            'motionless elevator - skip call with mismatched direction ' => [
+                'numberOfFloors' => 5,
+                'personsInside' => 0,
+                'currentFloor' => 1,
+                'direction' => 'up',
+                'currentTargetFloor' => 5,
+                'fromCabinCalls' => [],
+                'outsideCabinCalls' => [
+                    (new OutsideCabinCall())->setFloor(5)->setDirection('down'),
+                    (new OutsideCabinCall())->setFloor(3)->setDirection('down'),
+                ],
+                'RESULT' => ['floor' => 5, 'direction' => 'up'],
+            ],
             'motionless elevator - open door on current floor' => [
                 'numberOfFloors' => 5,
                 'personsInside' => 0,
@@ -58,7 +72,7 @@ class StandardStrategyTest extends TestCase
                 'outsideCabinCalls' => [
                     (new OutsideCabinCall())->setFloor(1)->setDirection('up')
                 ],
-                'RESULT' => ['floor' => 1, ],
+                'RESULT' => ['floor' => 1, 'direction' => null],
             ],
             'motionless elevator - single call' => [
                 'numberOfFloors' => 5,
@@ -68,14 +82,14 @@ class StandardStrategyTest extends TestCase
                 'currentTargetFloor' => null,
                 'fromCabinCalls' => [],
                 'outsideCabinCalls' => [
-                    (new OutsideCabinCall())->setFloor(3)->setDirection('up')
+                    (new OutsideCabinCall())->setFloor(2)->setDirection('up')
                 ],
-                'RESULT' => ['floor' => 3, ],
+                'RESULT' => ['floor' => 2, 'direction' => 'up'],
             ],
             'motionless elevator - choose nearest floor' => [
                 'numberOfFloors' => 6,
                 'personsInside' => 0,
-                'currentFloor' => 4,
+                'currentFloor' => 3,
                 'direction' => null,
                 'currentTargetFloor' => null,
                 'fromCabinCalls' => [],
@@ -83,7 +97,7 @@ class StandardStrategyTest extends TestCase
                     (new OutsideCabinCall())->setFloor(5)->setDirection('up'),
                     (new OutsideCabinCall())->setFloor(2)->setDirection('down')
                 ],
-                'RESULT' => ['floor' => 5, ],
+                'RESULT' => ['floor' => 2, 'direction' => 'down'],
             ],
             'in move elevator - skip call with mismatched direction' => [
                 'numberOfFloors' => 6,
@@ -97,7 +111,7 @@ class StandardStrategyTest extends TestCase
                 'outsideCabinCalls' => [
                     (new OutsideCabinCall())->setFloor(2)->setDirection('down')
                 ],
-                'RESULT' => ['floor' => 6, ],
+                'RESULT' => ['floor' => 6, 'direction' => 'up'],
             ],
             'in move elevator - stop to pick up a person with matched direction' => [
                 'numberOfFloors' => 6,
@@ -111,7 +125,7 @@ class StandardStrategyTest extends TestCase
                 'outsideCabinCalls' => [
                     (new OutsideCabinCall())->setFloor(2)->setDirection('up')
                 ],
-                'RESULT' => ['floor' => 2, ],
+                'RESULT' => ['floor' => 2, 'direction' => 'up'],
             ],
         ];
 

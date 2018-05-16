@@ -30,6 +30,7 @@
         currentFloor: state => state.elevator.currentFloor,
         targetFloor: state => state.elevator.targetFloor,
         numberOfFloors: state =>state.elevator.numberOfFloors,
+        strategy: state =>state.elevator.strategy,
         elevatorCalls: state => state.elevator.elevatorCalls
       }),
       height: function () {
@@ -48,9 +49,20 @@
         return this.totalHeight - this.height * (this.currentFloor + delta);
       }
     },
-    watch: {
-      numberOfFloors (value, oldValue) {
+    methods: {
+      reset() {
+        if (this.moveInterval) {
+          clearInterval(this.moveInterval);
+        }
         this.offsetTop = this.totalHeight - this.height * this.currentFloor;
+      }
+    },
+    watch: {
+      strategy () {
+        this.reset();
+      },
+      numberOfFloors () {
+        this.reset();
       },
       targetOffset(value) {
         if (null === value) {
@@ -64,7 +76,7 @@
         }
 
         this.moveInterval = setInterval(() => {
-          if (Math.abs(this.offsetTop - this.targetOffset) < Math.abs(step)) {
+          if (Math.abs(this.offsetTop - this.targetOffset) <= Math.abs(step)) {
             clearInterval(this.moveInterval);
             this.offsetTop = this.targetOffset;
 

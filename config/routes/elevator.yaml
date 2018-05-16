@@ -1,4 +1,4 @@
 elevatorMain:
     path: /
-    controller: 'App\Controller\ElevatorController::main'
+    controller: 'App\Controller\ElevatorController::resolve'
     methods:    [POST, OPTIONS]

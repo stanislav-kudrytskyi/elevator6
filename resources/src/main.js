@@ -11,6 +11,7 @@ Vue.use(VueResource);
 
 Vue.config.productionTip = false;
 
+Vue.http.options.root = process.env.API_BASE_URL;
 //Vue.use(Vuex);
 
 /* eslint-disable no-new */

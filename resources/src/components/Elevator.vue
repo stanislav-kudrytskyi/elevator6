@@ -1,5 +1,6 @@
 <template>
     <div class="main-container">
+        <h2 class="header">Elevator 6</h2>
         <div class="elevator">
             <cabin v-bind:floorHeight="floorHeight"></cabin>
             <floor
@@ -26,7 +27,7 @@
       this.$store.dispatch({
         type: 'reset',
         numberOfFloors: 5,
-        strategy: 'monkey',
+        strategy: 'standard',
       });
     },
     computed: {
@@ -59,7 +60,6 @@
     },
     watch: {
       targetFloor (oldValue, newValue) {
-        console.log('targetFloor', oldValue, newValue)
         if (this.targetFloor === this.currentFloor) {
           this.$store.dispatch('openDoors');
         }
@@ -86,6 +86,10 @@
         text-align:left;
         padding: 0;
         margin: 0;
+    }
+
+    .header {
+        text-align: center;
     }
     .elevator {
         float:left;

@@ -59,9 +59,31 @@ class StandardStrategy extends Strategy implements IStandardStrategy
         });
     }
 
+    protected function getResultDirection(int $targetFloor)
+    {
+        if ($targetFloor === $this->currentFloor) {
+            return null;
+        }
+
+        return $targetFloor > $this->currentFloor ? IDirection::UP : IDirection::DOWN;
+    }
+
+    protected function checkDirection()
+    {
+        if ($this->direction === IDirection::UP && $this->currentFloor === $this->state->getNumberOfFloors()) {
+            $this->direction = IDirection::DOWN;
+            return;
+        }
+
+        if ($this->direction === IDirection::DOWN && $this->currentFloor === 1) {
+            $this->direction = IDirection::UP;
+        }
+    }
+
     public function __construct(IState $state)
     {
         parent::__construct($state);
+        $this->checkDirection();
         $this->filterOutCabinCalls();
         $this->filterFromCabinCalls();
     }
@@ -75,9 +97,16 @@ class StandardStrategy extends Strategy implements IStandardStrategy
         );
 
         if (!$call) {
+            $call = $this->getFurthestCall(...array_merge(
+                $this->state->getFromCabinCalls(),
+                $this->state->getOutsideCabinCalls()
+            ));
+        }
+
+        if (!$call) {
             return new StateResolution($this->currentFloor, null);
         }
 
-        return new StateResolution($call->getFloor(), $this->direction);
+        return new StateResolution($call->getFloor(), $this->getResultDirection($call->getFloor()));
     }
 }

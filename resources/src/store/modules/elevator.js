@@ -9,7 +9,7 @@ const state = {
   targetFloor: null,
   personsInside: 0,
   numberOfFloors: 0,
-  elevatorCalls: [],
+  calls: [],
   ajax: null
 };
 
@@ -20,8 +20,8 @@ const getters = {
 
 // actions
 const actions = {
-  requestStateResolution({commit}, settings) {
-    Vue.http.post('https://elevator.local.com/elevator/', state, {
+  requestStateResolution({commit}) {
+    Vue.http.post('elevator/', state, {
       before(request) {
         // abort previous request, if exists
         if (Vue.previousRequest) {
@@ -33,6 +33,9 @@ const actions = {
     }).then(response => {
       commit('setTargetFloor', {
         targetFloor: response.body.targetFloor
+      });
+      commit('setDirection', {
+        direction: response.body.direction
       })
     }, response => {
       console.log('error', response);
@@ -48,18 +51,22 @@ const actions = {
       to: elevatorCall.toFloor ? elevatorCall.toFloor : null
     });
 
+    if (state.doorsOpened) {
+      return;
+    }
+
     dispatch('requestStateResolution');
   },
   openDoors({commit, dispatch}) {
     commit('openDoors');
     setTimeout(function closeDoors() {
-      if (state.personsInside > 0 && state.elevatorCalls.length === 0) {
+      if (state.personsInside > 0 && state.calls.length === 0) {
         setTimeout(closeDoors, 4000);
         return;
       }
 
       commit('closeDoors');
-      if (state.elevatorCalls.length) {
+      if (state.calls.length) {
         dispatch('requestStateResolution')
       }
     }, 4000);
@@ -80,7 +87,7 @@ const mutations = {
   init (state, payload) {
     state.strategy = payload.strategy ? payload.strategy : false;
     state.numberOfFloors = payload.numberOfFloors ? payload.numberOfFloors : 5;
-    state.elevatorCalls = [];
+    state.calls = [];
     state.doorsOpened = false;
     state.personsInside = 0;
     state.currentFloor = 1;
@@ -88,16 +95,12 @@ const mutations = {
     state.direction = null;
   },
   addCall(state, payload) {
-    state.elevatorCalls.push(payload);
+    state.calls.push(payload);
   },
   openDoors(state) {
     state.doorsOpened = true;
-    state.elevatorCalls = state.elevatorCalls.filter(function (call) {
-      if (call.to === state.currentFloor || call.from === state.currentFloor) {
-        return false;
-      }
-
-      return true;
+    state.calls = state.calls.filter(function (call) {
+      return !(call.to === state.currentFloor || call.from === state.currentFloor)
     });
 
     state.targetFloor = null;
@@ -105,9 +108,11 @@ const mutations = {
   closeDoors(state) {
     state.doorsOpened = false;
   },
-
   setCurrentFloor(state, payload) {
     state.currentFloor = payload.currentFloor
+  },
+  setDirection(state, payload) {
+    state.direction = payload.direction
   },
   getInCabin(state) {
     state.personsInside++;

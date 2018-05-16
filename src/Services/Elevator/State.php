@@ -55,7 +55,7 @@ class State implements IState, ISelfValidated
         return $this->outsideCabinCall;
     }
 
-    public function getCurrentTargetFloor(): int
+    public function getCurrentTargetFloor(): ?int
     {
         return $this->targetFloor;
     }
@@ -113,7 +113,7 @@ class State implements IState, ISelfValidated
         return $this;
     }
 
-    public function setCurrentDirection(string $direction = null)
+    public function setCurrentDirection(string $direction = null): IState
     {
         if (!in_array($direction, [null, IDirection::UP, IDirection::DOWN])) {
             throw new ElevatorException('Invalid direction', 400);

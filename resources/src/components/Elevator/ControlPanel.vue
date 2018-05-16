@@ -14,8 +14,9 @@
             </div>
         </div>
 
-        <div class="call-from-cabin">
-            <ul v-if="personsInside > 0">
+        <div class="call-from-cabin" v-if="personsInside > 0">
+            <div>Make a call from cabin:</div>
+            <ul>
                 <li type="none" v-for="floor in floors" v-bind:class="{'active': floor.selected}" v-on:click="addCall(floor.number)">{{floor.number}}</li>
             </ul>
         </div>
@@ -25,6 +26,7 @@
                 <div class="column">Strategy:</div>
                 <div class="column">
                     <select v-model="currentStrategy">
+                        <option>standard</option>
                         <option>monkey</option>
                     </select>
                 </div>
@@ -57,7 +59,7 @@
         currentFloor: state => state.elevator.currentFloor,
         targetFloor: state => state.elevator.targetFloor,
         numberOfFloors: state => state.elevator.numberOfFloors,
-        elevatorCalls: state => state.elevator.elevatorCalls,
+        elevatorCalls: state => state.elevator.calls,
         personsInside: state => state.elevator.personsInside,
       }),
       floors () {
@@ -93,7 +95,9 @@
       },
       addCall (floor) {
         this.$store.dispatch('addCall', {
-          toFloor: floor
+          toFloor: floor,
+          fromFloor: null,
+          direction: null
         });
         console.log('to floor', floor)
       },
@@ -170,6 +174,9 @@
         }
 
         .call-from-cabin {
+            padding: 5px;
+            background-color: #f1ffe6;
+
             ul {
                 width: 120px;
                 -moz-column-count: 2;
@@ -193,6 +200,7 @@
                     box-sizing: border-box;
                     -moz-box-sizing: border-box;
                     -webkit-box-sizing: border-box;
+                    background-color: #fff;
                 }
 
                 li.active {

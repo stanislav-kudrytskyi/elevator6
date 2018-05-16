@@ -71,6 +71,7 @@ class ElevatorFactory
             ->setNumberOfFloors($this->request->get('numberOfFloors', 0))
             ->setCurrentFloor($this->request->get('currentFloor', 0))
             ->setTargetFloor($this->request->get('targetFloor', 0))
+            ->setCurrentDirection($this->request->get('direction', null))
             ->setPersonsInside($this->request->get('personsInside'));
 
         $state->validate();

@@ -18,7 +18,7 @@ interface IState
     public function getNumberOfFloors(): int;
     public function getNumberOfPersonsInside(): int;
     public function getCurrentFloor(): int;
-    public function getCurrentTargetFloor(): int;
+    public function getCurrentTargetFloor(): ?int;
     public function getCurrentDirection(): ?string;
 
     /**
@@ -36,7 +36,7 @@ interface IState
      */
     public function getOutsideCabinCalls(): array;
 
-    public function setCurrentDirection(string $direction = null);
+    public function setCurrentDirection(string $direction = null): IState;
     public function setElevatorCalls(IElevatorCall ...$calls): IState;
     public function setNumberOfFloors(int $number): IState;
     public function setCurrentFloor(int $floor): IState;

@@ -3,8 +3,8 @@
         <div class="floor-number">{{floorNumber}}</div>
         <div class="call-buttons">
             <div class="arrow">
-                <div v-if="floorNumber < numberOfFloors" class="arrow-up" v-on:click="callUp"></div>
-                <div v-if="floorNumber > 1" class="arrow-down" v-on:click="callDown"></div>
+                <div v-if="floorNumber < numberOfFloors" v-bind:class="{'active': upActive, 'arrow-up': true}" v-on:click="callUp"></div>
+                <div v-if="floorNumber > 1" v-bind:class="{'active': downActive, 'arrow-down' : true}" v-on:click="callDown"></div>
             </div>
         </div>
     </div>
@@ -18,8 +18,19 @@
     props: ['offsetTop', 'floorHeight', 'floorNumber'],
     computed: {
       ...mapState({
-        numberOfFloors: state =>state.elevator.numberOfFloors
+        numberOfFloors: state =>state.elevator.numberOfFloors,
+        elevatorCalls: state => state.elevator.calls
       }),
+      upActive () {
+        return this.elevatorCalls.filter(call => {
+          return call.from === this.floorNumber && call.direction === 'up'
+        }).length > 0
+      },
+      downActive () {
+        return this.elevatorCalls.filter(call => {
+          return call.from === this.floorNumber && call.direction === 'down'
+        }).length > 0
+      }
     },
     methods: {
       callUp () {
@@ -64,7 +75,7 @@
                  height: 0;
                  border-left: 10px solid transparent;
                  border-right: 10px solid transparent;
-                 border-bottom: 20px solid red;
+                 border-bottom: 20px solid #ff8c93;
                  margin: 2px 0;
              }
 
@@ -74,8 +85,16 @@
                  border-left: 10px solid transparent;
                  border-right: 10px solid transparent;
 
-                 border-top: 20px solid #f00;
+                 border-top: 20px solid #ff8c93;
                  margin: 2px 0;
+             }
+
+             .arrow-up.active {
+                 border-bottom: 20px solid #f00;
+             }
+
+             .arrow-down.active {
+                 border-top: 20px solid #f00;
              }
          }
      }
